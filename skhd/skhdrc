@@ -1,0 +1,4 @@
+# Load Mouse Profile with OpenRGB
+cmd + alt + ctrl - p : /Applications/OpenRGB.app/Contents/MacOS/OpenRGB -p ~/.config/OpenRGB/br.orp
+
+

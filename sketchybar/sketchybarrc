@@ -1,0 +1,134 @@
+# This is a demo config to showcase some of the most important commands.
+# It is meant to be changed and configured, as it is intentionally kept sparse.
+# For a (much) more advanced configuration example see my dotfiles:
+# https://github.com/FelixKratz/dotfiles
+
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+
+##### Bar Appearance #####
+# Configuring the general appearance of the bar.
+# These are only some of the options available. For all options see:
+# https://felixkratz.github.io/SketchyBar/config/bar
+# If you are looking for other colors, see the color picker:
+# https://felixkratz.github.io/SketchyBar/config/tricks#color-picker
+
+sketchybar --bar position=top height=40 blur_radius=20 color=0x00000000
+
+##### Changing Defaults #####
+# We now change some default values, which are applied to all further items.
+# For a full list of all available item properties see:
+# https://felixkratz.github.io/SketchyBar/config/items
+
+default=(
+	padding_left=5
+	padding_right=5
+	icon.font="Hack Nerd Font:Bold:17.0"
+	label.font="Hack Nerd Font:Bold:14.0"
+	icon.color=0xffffffff
+	label.color=0xffffffff
+	icon.padding_left=4
+	icon.padding_right=4
+	label.padding_left=4
+	label.padding_right=4
+)
+sketchybar --default "${default[@]}"
+
+##### Adding Mission Control Space Indicators #####
+# Let's add some mission control spaces:
+# https://felixkratz.github.io/SketchyBar/config/components#space----associate-mission-control-spaces-with-an-item
+# to indicate active and available mission control spaces.
+
+sketchybar --add event aerospace_workspace_change
+
+##### Adding Left Items #####
+# We add some regular items to the left side of the bar, where
+# only the properties deviating from the current defaults need to be set
+
+sketchybar --add item apple_icon left \
+	--set apple_icon label.drawing=off icon.drawing=on icon= \
+	background.drawing=on background.color=0xffffffff icon.color=0xff7196e6 \
+	background.corner_radius=8 background.height=28 background.border_width=2 background.border_color=0xff7196e6 \
+	icon.padding_left=9 icon.padding_right=9 padding_right=10
+
+sketchybar --set apple_icon popup.drawing=off popup.background.border_width=1 popup.background.border_color=0xff1e90ff popup.background.drawing=on click_script="sketchybar --set apple_icon popup.drawing=on"
+
+sketchybar --add item shut_down popup.apple_icon \
+	--set shut_down label.drawing=on icon.drawing=on icon=􀆨 label="Shut Down" \
+	background.drawing=on background.color=0xff000000 background.corner_radius=8
+
+for sid in $(aerospace list-workspaces --all); do
+	monitor=$(aerospace list-windows --workspace "$sid" --format "%{monitor-appkit-nsscreen-screens-id}")
+
+	if [ -z "$monitor" ]; then
+		monitor="1"
+	fi
+
+	sketchybar --add item space."$sid" left \
+		--subscribe space."$sid" space_windows_change aerospace_workspace_change display_change system_woke mouse.entered mouse.exited \
+		--set space."$sid" \
+		display="$monitor" \
+		padding_right=0 \
+		icon="$sid" \
+		label.padding_right=7 \
+		icon.padding_left=3 \
+		icon.padding_right=3 \
+		label.drawing=off \
+		background.drawing=on \
+		label.font="sketchybar-app-font:Regular:16.0" \
+		background.color="$ACCENT_COLOR" \
+		icon.color="$BACKGROUND" \
+		background.border_color=0xffaad17b background.border_width=2 \
+		label.color="$BACKGROUND" \
+		background.corner_radius=8 \
+		background.height=28 \
+		background.padding_right=4 background.padding_left=4 \
+		label.drawing=on \
+		click_script="aerospace workspace $sid" \
+		script="$CONFIG_DIR/plugins/aerospace.sh $sid"
+done
+
+sketchybar --add item app_seperator left \
+	--set app_seperator label="|" padding_left=0 padding_right=10 icon.drawing=off
+
+sketchybar --add item front_app_icon left \
+	--set front_app_icon label.drawing=on label.font="sketchybar-app-font:Regular:16.0" script="$PLUGIN_DIR/front_app.sh" \
+	label.color=0xff7196e6 \
+	padding_right=0 padding_left=0 icon.drawing=off \
+	background.padding_left=0 background.padding_right=0 background.drawing=off --subscribe front_app_icon front_app_switched
+
+sketchybar --add item front_app_label left \
+	--set front_app_label label="Ghostty" \
+	icon.drawing=off padding_left=0 padding_right=0 background.drawing=off label.color=0xff7196e6
+
+sketchybar --add bracket front_app_group front_app_icon front_app_label \
+	--set front_app_group background.color=0xffffffff background.corner_radius=8 \
+	background.height=28 \
+	padding_right=0 padding_left=0 \
+	background.border_width=2 background.border_color=0xff7196e6
+##### Adding Right Items #####
+# In the same way as the left items we can add items to the right side.
+# Additional position (e.g. center) are available, see:
+# https://felixkratz.github.io/SketchyBar/config/items#adding-items-to-sketchybar
+
+# Some items refresh on a fixed cycle, e.g. the clock runs its script once
+# every 10s. Other items respond to events they subscribe to, e.g. the
+# volume.sh script is only executed once an actual change in system audio
+# volume is registered. More info about the event system can be found here:
+# https://felixkratz.github.io/SketchyBar/config/events
+
+sketchybar --add item clock right \
+	--set clock update_freq=10 icon= script="$PLUGIN_DIR/clock.sh" \
+	--add item volume right \
+	--set volume script="$PLUGIN_DIR/volume.sh" \
+	--subscribe volume volume_change \
+	--add item battery right \
+	--set battery update_freq=120 script="$PLUGIN_DIR/battery.sh" \
+	--subscribe battery system_woke power_source_change
+
+sketchybar --add item weather right \
+    --set weather update_freq=600 script="$PLUGIN_DIR/weather.sh" icon.drawing=on label.drawing=on icon.font="Hack Nerd Font:Regular:13.0" background.drawing=on
+
+
+
+##### Force all scripts to run the first time (never do this in a script) #####
+sketchybar --update
