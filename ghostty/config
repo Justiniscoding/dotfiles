@@ -1,0 +1,11 @@
+theme = Ayu 
+font-family = "FiraMono Nerd Font"
+custom-shader = shaders/cursor_smear.glsl
+
+mouse-hide-while-typing = true
+background-opacity=0.25
+background-blur=15
+
+macos-titlebar-style=hidden
+
+keybind = global:cmd+backquote=toggle_quick_terminal
