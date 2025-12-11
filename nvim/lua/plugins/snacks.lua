@@ -72,6 +72,21 @@ return {
 				{ section = "startup", align = "center" },
 			},
 		},
+		-- Prevent results from .git or node_modules showing in the
+		-- file fuzzy finder
+		picker = {
+			exclude = {
+				".git",
+				"node_modules",
+			},
+		},
+		lazygit = {
+			theme = {
+				activeBorderColor = { fg = "SnacksDashboardDir", bold = true },
+				inactiveBorderColor = { fg = "SnacksPickerTotals" },
+				defaultFgColor = { fg = "SnacksPickerTotals" },
+			},
+		},
 	},
 	lazy = false,
 }

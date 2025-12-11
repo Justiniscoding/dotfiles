@@ -26,6 +26,10 @@ return {
 					"RenderMarkdownH4Bg",
 					"RenderMarkdownH5Bg",
 					"RenderMarkdownH6Bg",
+					"BlinkCmpMenu",
+					"BlinkCmpSource",
+					"PMenuKind",
+					"PMenu",
 				},
 			})
 		end,

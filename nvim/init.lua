@@ -25,3 +25,8 @@ if is_godot_project and not is_server_running then
 
 	require("lspconfig").gdscript.setup({})
 end
+
+-- Hides annoying vulkan related errors when developing for glsl
+require("lspconfig").glslls.setup({
+	cmd = { "glslls", "--stdin", "--target-env", "opengl" },
+})

@@ -9,3 +9,5 @@ background-blur=15
 macos-titlebar-style=hidden
 
 keybind = global:cmd+backquote=toggle_quick_terminal
+
+macos-icon-frame = chrome
